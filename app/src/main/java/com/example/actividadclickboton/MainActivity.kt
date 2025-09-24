@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MusicaDeFondo() // Llamamos a la música aquí
+            MusicaDeFondo() // Llamada fun musica
             ActividadClickBotonTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Fondo(
@@ -75,7 +77,7 @@ fun Fondo(modifier: Modifier = Modifier) {
             contentScale = ContentScale.Crop
         )
 
-        // Imagen de planta
+        // Imagen de principal
         Image(
             painter = imagenes[indice],
             contentDescription = "Planta",
@@ -110,7 +112,10 @@ fun Fondo(modifier: Modifier = Modifier) {
                     contentColor = Color.Black
                 )
             ) {
-                Text("Regar")
+                Text(text = "Regar",
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 30.sp
+                    )
             }
 
             // Botón Subir Nivel
@@ -131,7 +136,12 @@ fun Fondo(modifier: Modifier = Modifier) {
                     contentColor = Color.White
                 )
             ) {
-                Text("Subir nivel ($costeNivel dinero)")
+                Text(
+                    text = "Subir nivel ($costeNivel dinero)",
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 21.sp,
+                    modifier = Modifier.align(Alignment.CenterVertically) // o TopEnd, según quieras
+                )
             }
         }
 
@@ -149,10 +159,11 @@ fun Fondo(modifier: Modifier = Modifier) {
     }
 }
 
+
 @Composable
 fun MusicaDeFondo() {
     val context = LocalContext.current
-    val mediaPlayer = MediaPlayer.create(context, R.raw.green_wizard_gnome_song) // tu archivo en res/raw
+    val mediaPlayer = MediaPlayer.create(context, R.raw.green_wizard_gnome_song)
 
     DisposableEffect(Unit) {
         mediaPlayer.isLooping = true // Para que la música se repita
