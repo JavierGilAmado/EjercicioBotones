@@ -1,5 +1,6 @@
 package com.example.actividadclickboton
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +19,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +40,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            MusicaDeFondo() // Llamamos a la música aquí
             ActividadClickBotonTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Fondo(
@@ -62,7 +66,6 @@ fun Fondo(modifier: Modifier = Modifier) {
     var costeNivel by remember { mutableStateOf(10) }
     var nivel by remember { mutableStateOf(1) }
 
-
     Box(modifier = modifier) {
         // Fondo
         Image(
@@ -83,7 +86,7 @@ fun Fondo(modifier: Modifier = Modifier) {
             contentScale = ContentScale.Crop
         )
 
-        // Contenedor de los dos botones en la parte inferior
+        // Fila con los dos botones
         androidx.compose.foundation.layout.Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -99,7 +102,7 @@ fun Fondo(modifier: Modifier = Modifier) {
                     }
                 },
                 modifier = Modifier
-                    .weight(1f) // ocupa la mitad del ancho
+                    .weight(1f)
                     .height(80.dp)
                     .padding(end = 4.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -110,11 +113,17 @@ fun Fondo(modifier: Modifier = Modifier) {
                 Text("Regar")
             }
 
-            // Segundo botón
+            // Botón Subir Nivel
             Button(
-                onClick = { /* Acción del segundo botón */ },
+                onClick = {
+                    if (dinero >= costeNivel) { // Si hay suficiente dinero
+                        dinero -= costeNivel   // Se descuenta el dinero
+                        nivel++                // Se sube un nivel
+                        costeNivel += 10       // Se incrementa el coste para el siguiente nivel
+                    }
+                },
                 modifier = Modifier
-                    .weight(1f) // ocupa la mitad del ancho
+                    .weight(1f)
                     .height(80.dp)
                     .padding(start = 4.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -126,7 +135,7 @@ fun Fondo(modifier: Modifier = Modifier) {
             }
         }
 
-        // Texto de dinero
+        // Texto de dinero y nivel
         Text(
             text = "DINERO : $dinero",
             modifier = Modifier.offset(x = 250.dp, y = 20.dp),
@@ -139,6 +148,23 @@ fun Fondo(modifier: Modifier = Modifier) {
         )
     }
 }
+
+@Composable
+fun MusicaDeFondo() {
+    val context = LocalContext.current
+    val mediaPlayer = MediaPlayer.create(context, R.raw.green_wizard_gnome_song) // tu archivo en res/raw
+
+    DisposableEffect(Unit) {
+        mediaPlayer.isLooping = true // Para que la música se repita
+        mediaPlayer.start()
+
+        onDispose {
+            mediaPlayer.stop()
+            mediaPlayer.release()
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
